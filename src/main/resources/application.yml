@@ -1,23 +1,51 @@
-#port 결정 = default 8080 = 8081
-#Egiex 80 / Jenkins : 8080
 server:
   port: 9090
   servlet:
     context-path: /
+
 spring:
+  # 데이터베이스 설정 (다중 DB 바인딩용 커스텀 프로퍼티)
   datasource:
-    url: jdbc:postgresql://localhost:5432/recipe
-    username: postgres
-    password: 1234
-    driver-class-name: org.postgresql.Driver
+    postgres:
+      jdbc-url: jdbc:postgresql://localhost:5432/recipe
+      username: postgres
+      password: "1234"
+      driver-class-name: org.postgresql.Driver
+    oracle:
+      jdbc-url: jdbc:oracle:thin:@211.238.142.45:1521:XE
+      username: hr
+      password: happy
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+
   thymeleaf:
     cache: false
     encoding: UTF-8
-    prefix: classpath:templates/
+    prefix: classpath:/templates/
     suffix: .html
     mode: HTML
-# mybatis
+
+  ai:
+    google:
+      genai:
+        api-key: ${GEN_KEY}
+        project-id: b241029-agent-rhqq
+        location: us-central1
+        embedding:
+          api-key: ${GEN_KEY}
+          project-id: b241029-agent-rhqq
+          text: 
+            options:
+              model: gemini-embedding-001
+              dimensions: 768
+    model: 
+      embedding:
+        text: google-genai
+
+# MyBatis 설정
 mybatis:
   type-aliases-package: com.sist.web.vo
-  #mapper-locations: mybatis/mapper/*.xml
-
+  mapper-locations: 
+    - classpath:/mapper/oracle/*.xml
+    - classpath:/mapper/postgres/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
